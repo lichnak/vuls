@@ -111,19 +111,19 @@ func CheckIfAzureContainerExists() error {
 
 	found := false
 	for _, con := range r.Containers {
-		if con.Name == c.Conf.AzureContainer {
+		if con.Name == c.Conf.Report.AzureContainer {
 			found = true
 			break
 		}
 	}
 	if !found {
-		return fmt.Errorf("Container not found. Container: %s", c.Conf.AzureContainer)
+		return fmt.Errorf("Container not found. Container: %s", c.Conf.Report.AzureContainer)
 	}
 	return nil
 }
 
 func getBlobClient() (storage.BlobStorageClient, error) {
-	api, err := storage.NewBasicClient(c.Conf.AzureAccount, c.Conf.AzureKey)
+	api, err := storage.NewBasicClient(c.Conf.Report.AzureAccount, c.Conf.Report.AzureKey)
 	if err != nil {
 		return storage.BlobStorageClient{}, err
 	}
@@ -139,11 +139,11 @@ func createBlockBlob(cli storage.BlobStorageClient, k string, b []byte) error {
 		k = k + ".gz"
 	}
 
-	ref := cli.GetContainerReference(c.Conf.AzureContainer)
+	ref := cli.GetContainerReference(c.Conf.Report.AzureContainer)
 	blob := ref.GetBlobReference(k)
 	if err := blob.CreateBlockBlobFromReader(bytes.NewReader(b), nil); err != nil {
 		return fmt.Errorf("Failed to upload data to %s/%s, %s",
-			c.Conf.AzureContainer, k, err)
+			c.Conf.Report.AzureContainer, k, err)
 	}
 	return nil
 }

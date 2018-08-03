@@ -183,6 +183,7 @@ func (p *ReportCmd) SetFlags(f *flag.FlagSet) {
 		false,
 		"Refresh CVE information in JSON file under results dir")
 
+	//TODO
 	f.StringVar(
 		&p.cveDBType,
 		"cvedb-type",
@@ -360,21 +361,24 @@ func (p *ReportCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 		return subcommands.ExitUsageError
 	}
 
+	pp.Println(c.Conf)
+
 	c.Conf.Lang = p.lang
 	c.Conf.ResultsDir = p.resultsDir
 	c.Conf.RefreshCve = p.refreshCve
 
-	c.Conf.CveDBType = p.cveDBType
-	c.Conf.CveDBPath = p.cveDBPath
-	c.Conf.CveDBURL = p.cveDBURL
+	//TODO
+	// c.Conf.Report.CveDict.Type= p.cveDBType
+	// c.Conf.CveDBPath = p.cveDBPath
+	// c.Conf.CveDBURL = p.cveDBURL
 
-	c.Conf.OvalDBType = p.ovalDBType
-	c.Conf.OvalDBPath = p.ovalDBPath
-	c.Conf.OvalDBURL = p.ovalDBURL
+	// c.Conf.OvalDBType = p.ovalDBType
+	// c.Conf.OvalDBPath = p.ovalDBPath
+	// c.Conf.OvalDBURL = p.ovalDBURL
 
-	c.Conf.GostDBType = p.gostDBType
-	c.Conf.GostDBPath = p.gostDBPath
-	c.Conf.GostDBURL = p.gostDBURL
+	// c.Conf.GostDBType = p.gostDBType
+	// c.Conf.GostDBPath = p.gostDBPath
+	// c.Conf.GostDBURL = p.gostDBURL
 
 	c.Conf.CvssScoreOver = p.cvssScoreOver
 	c.Conf.IgnoreUnscoredCves = p.ignoreUnscoredCves
@@ -456,36 +460,40 @@ func (p *ReportCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 	}
 
 	if p.toS3 {
-		c.Conf.AwsRegion = p.awsRegion
-		c.Conf.AwsProfile = p.awsProfile
-		c.Conf.S3Bucket = p.awsS3Bucket
-		c.Conf.S3ResultsDir = p.awsS3ResultsDir
-		c.Conf.S3ServerSideEncryption = p.awsS3ServerSideEncryption
+		//TODO
+		// c.Conf.AwsRegion = p.awsRegion
+		// c.Conf.AwsProfile = p.awsProfile
+		// c.Conf.S3Bucket = p.awsS3Bucket
+		// c.Conf.S3ResultsDir = p.awsS3ResultsDir
+		// c.Conf.S3ServerSideEncryption = p.awsS3ServerSideEncryption
 		if err := report.CheckIfBucketExists(); err != nil {
-			util.Log.Errorf("Check if there is a bucket beforehand: %s, err: %s", c.Conf.S3Bucket, err)
+			util.Log.Errorf("Check if there is a bucket beforehand: %s, err: %s",
+				c.Conf.Report.S3Bucket, err)
 			return subcommands.ExitUsageError
 		}
 		reports = append(reports, report.S3Writer{})
 	}
 
 	if p.toAzureBlob {
-		c.Conf.AzureAccount = p.azureAccount
-		if len(c.Conf.AzureAccount) == 0 {
-			c.Conf.AzureAccount = os.Getenv("AZURE_STORAGE_ACCOUNT")
-		}
+		//TODO
+		// c.Conf.Report.AzureAccount = p.azureAccount
+		// if len(c.Conf.AzureAccount) == 0 {
+		// c.Conf.AzureAccount = os.Getenv("AZURE_STORAGE_ACCOUNT")
+		// }
 
-		c.Conf.AzureKey = p.azureKey
-		if len(c.Conf.AzureKey) == 0 {
-			c.Conf.AzureKey = os.Getenv("AZURE_STORAGE_ACCESS_KEY")
-		}
+		// c.Conf.AzureKey = p.azureKey
+		// if len(c.Conf.AzureKey) == 0 {
+		// c.Conf.AzureKey = os.Getenv("AZURE_STORAGE_ACCESS_KEY")
+		// }
 
-		c.Conf.AzureContainer = p.azureContainer
-		if len(c.Conf.AzureContainer) == 0 {
-			util.Log.Error("Azure storage container name is required with -azure-container option")
-			return subcommands.ExitUsageError
-		}
+		// c.Conf.AzureContainer = p.azureContainer
+		// if len(c.Conf.AzureContainer) == 0 {
+		// util.Log.Error("Azure storage container name is required with -azure-container option")
+		// return subcommands.ExitUsageError
+		// }
 		if err := report.CheckIfAzureContainerExists(); err != nil {
-			util.Log.Errorf("Check if there is a container beforehand: %s, err: %s", c.Conf.AzureContainer, err)
+			util.Log.Errorf("Check if there is a container beforehand: %s, err: %s",
+				c.Conf.Report.AzureContainer, err)
 			return subcommands.ExitUsageError
 		}
 		reports = append(reports, report.AzureBlobWriter{})
@@ -505,16 +513,16 @@ func (p *ReportCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 		util.Log.Errorf("Run go-cve-dictionary as server mode before reporting or run with -cvedb-path option instead of -cvedb-url")
 		return subcommands.ExitFailure
 	}
-	if c.Conf.CveDBURL != "" {
-		util.Log.Infof("cve-dictionary: %s", c.Conf.CveDBURL)
+	if c.Conf.Report.CveDict.URL != "" {
+		util.Log.Infof("cve-dictionary: %s", c.Conf.Report.CveDict.URL)
 	} else {
-		if c.Conf.CveDBType == "sqlite3" {
-			util.Log.Infof("cve-dictionary: %s", c.Conf.CveDBPath)
+		if c.Conf.Report.CveDict.Type == "sqlite3" {
+			util.Log.Infof("cve-dictionary: %s", c.Conf.Report.CveDict.Path)
 		}
 	}
 
-	if c.Conf.OvalDBURL != "" {
-		util.Log.Infof("oval-dictionary: %s", c.Conf.OvalDBURL)
+	if c.Conf.Report.OvalDict.URL != "" {
+		util.Log.Infof("oval-dictionary: %s", c.Conf.Report.OvalDict.URL)
 		err := oval.Base{}.CheckHTTPHealth()
 		if err != nil {
 			util.Log.Errorf("OVAL HTTP server is not running. err: %s", err)
@@ -522,13 +530,13 @@ func (p *ReportCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 			return subcommands.ExitFailure
 		}
 	} else {
-		if c.Conf.OvalDBType == "sqlite3" {
-			util.Log.Infof("oval-dictionary: %s", c.Conf.OvalDBPath)
+		if c.Conf.Report.OvalDict.Type == "sqlite3" {
+			util.Log.Infof("oval-dictionary: %s", c.Conf.Report.OvalDict.Path)
 		}
 	}
 
-	if c.Conf.GostDBURL != "" {
-		util.Log.Infof("gost: %s", c.Conf.GostDBURL)
+	if c.Conf.Report.Gost.URL != "" {
+		util.Log.Infof("gost: %s", c.Conf.Report.Gost.URL)
 		err := gost.Base{}.CheckHTTPHealth()
 		if err != nil {
 			util.Log.Errorf("gost HTTP server is not running. err: %s", err)
@@ -536,10 +544,12 @@ func (p *ReportCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 			return subcommands.ExitFailure
 		}
 	} else {
-		if c.Conf.GostDBType == "sqlite3" {
-			util.Log.Infof("gost: %s", c.Conf.GostDBPath)
+		if c.Conf.Report.Gost.Type == "sqlite3" {
+			util.Log.Infof("gost: %s", c.Conf.Report.Gost.Path)
 		}
 	}
+
+	pp.Println(c.Conf)
 
 	var loaded models.ScanResults
 	if loaded, err = report.LoadScanResults(dir); err != nil {
@@ -572,16 +582,17 @@ func (p *ReportCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 		}
 	}
 
+	//TODO  refactoring
 	dbclient, locked, err := report.NewDBClient(report.DBClientConf{
-		CveDBType:  c.Conf.CveDBType,
-		CveDBURL:   c.Conf.CveDBURL,
-		CveDBPath:  c.Conf.CveDBPath,
-		OvalDBType: c.Conf.OvalDBType,
-		OvalDBURL:  c.Conf.OvalDBURL,
-		OvalDBPath: c.Conf.OvalDBPath,
-		GostDBType: c.Conf.GostDBType,
-		GostDBURL:  c.Conf.GostDBURL,
-		GostDBPath: c.Conf.GostDBPath,
+		CveDBType:  c.Conf.Report.CveDict.Type,
+		CveDBURL:   c.Conf.Report.CveDict.URL,
+		CveDBPath:  c.Conf.Report.CveDict.Path,
+		OvalDBType: c.Conf.Report.OvalDict.Type,
+		OvalDBURL:  c.Conf.Report.OvalDict.URL,
+		OvalDBPath: c.Conf.Report.OvalDict.Path,
+		GostDBType: c.Conf.Report.Gost.Type,
+		GostDBURL:  c.Conf.Report.Gost.URL,
+		GostDBPath: c.Conf.Report.Gost.Path,
 		DebugSQL:   c.Conf.DebugSQL,
 	})
 	if locked {

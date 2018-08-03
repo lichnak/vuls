@@ -215,12 +215,13 @@ func (p *ServerCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 
 	c.Conf.Lang = p.lang
 	c.Conf.ResultsDir = p.resultsDir
-	c.Conf.CveDBType = p.cveDBType
-	c.Conf.CveDBPath = p.cveDBPath
-	c.Conf.CveDBURL = p.cveDBURL
-	c.Conf.OvalDBType = p.ovalDBType
-	c.Conf.OvalDBPath = p.ovalDBPath
-	c.Conf.OvalDBURL = p.ovalDBURL
+	//TODO
+	// c.Conf.CveDBType = p.cveDBType
+	// c.Conf.CveDBPath = p.cveDBPath
+	// c.Conf.CveDBURL = p.cveDBURL
+	// c.Conf.OvalDBType = p.ovalDBType
+	// c.Conf.OvalDBPath = p.ovalDBPath
+	// c.Conf.OvalDBURL = p.ovalDBURL
 	c.Conf.CvssScoreOver = p.cvssScoreOver
 	c.Conf.IgnoreUnscoredCves = p.ignoreUnscoredCves
 	c.Conf.IgnoreUnfixed = p.ignoreUnfixed
@@ -241,16 +242,16 @@ func (p *ServerCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 		util.Log.Errorf("Run go-cve-dictionary as server mode before Servering or run with -cvedb-path option")
 		return subcommands.ExitFailure
 	}
-	if c.Conf.CveDBURL != "" {
-		util.Log.Infof("cve-dictionary: %s", c.Conf.CveDBURL)
+	if c.Conf.Report.CveDict.URL != "" {
+		util.Log.Infof("cve-dictionary: %s", c.Conf.Report.CveDict.URL)
 	} else {
-		if c.Conf.CveDBType == "sqlite3" {
-			util.Log.Infof("cve-dictionary: %s", c.Conf.CveDBPath)
+		if c.Conf.Report.CveDict.Type == "sqlite3" {
+			util.Log.Infof("cve-dictionary: %s", c.Conf.Report.CveDict.Path)
 		}
 	}
 
-	if c.Conf.OvalDBURL != "" {
-		util.Log.Infof("oval-dictionary: %s", c.Conf.OvalDBURL)
+	if c.Conf.Report.OvalDict.URL != "" {
+		util.Log.Infof("oval-dictionary: %s", c.Conf.Report.OvalDict.URL)
 		err = oval.Base{}.CheckHTTPHealth()
 		if err != nil {
 			util.Log.Errorf("OVAL HTTP server is not running. err: %s", err)
@@ -258,21 +259,21 @@ func (p *ServerCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 			return subcommands.ExitFailure
 		}
 	} else {
-		if c.Conf.OvalDBType == "sqlite3" {
-			util.Log.Infof("oval-dictionary: %s", c.Conf.OvalDBPath)
+		if c.Conf.Report.OvalDict.Type == "sqlite3" {
+			util.Log.Infof("oval-dictionary: %s", c.Conf.Report.OvalDict.Path)
 		}
 	}
 
 	dbclient, locked, err := report.NewDBClient(report.DBClientConf{
-		CveDBType:  c.Conf.CveDBType,
-		CveDBURL:   c.Conf.CveDBURL,
-		CveDBPath:  c.Conf.CveDBPath,
-		OvalDBType: c.Conf.OvalDBType,
-		OvalDBURL:  c.Conf.OvalDBURL,
-		OvalDBPath: c.Conf.OvalDBPath,
-		GostDBType: c.Conf.GostDBType,
-		GostDBURL:  c.Conf.GostDBURL,
-		GostDBPath: c.Conf.GostDBPath,
+		CveDBType:  c.Conf.Report.CveDict.Type,
+		CveDBURL:   c.Conf.Report.CveDict.URL,
+		CveDBPath:  c.Conf.Report.CveDict.Path,
+		OvalDBType: c.Conf.Report.OvalDict.Type,
+		OvalDBURL:  c.Conf.Report.OvalDict.URL,
+		OvalDBPath: c.Conf.Report.OvalDict.Path,
+		GostDBType: c.Conf.Report.Gost.Type,
+		GostDBURL:  c.Conf.Report.Gost.URL,
+		GostDBPath: c.Conf.Report.Gost.Path,
 		DebugSQL:   c.Conf.DebugSQL,
 	})
 	if locked {

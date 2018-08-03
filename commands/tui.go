@@ -43,6 +43,7 @@ type TuiCmd struct {
 	resultsDir string
 	refreshCve bool
 
+	//TODO
 	cvedbtype        string
 	cvedbpath        string
 	cveDictionaryURL string
@@ -95,6 +96,7 @@ func (*TuiCmd) Usage() string {
 		[-pipe]
 
 `
+	//TODO
 }
 
 // SetFlags set flag
@@ -119,6 +121,7 @@ func (p *TuiCmd) SetFlags(f *flag.FlagSet) {
 		false,
 		"Refresh CVE information in JSON file under results dir")
 
+	//TODO
 	f.StringVar(
 		&p.cvedbtype,
 		"cvedb-type",
@@ -224,17 +227,18 @@ func (p *TuiCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) s
 
 	c.Conf.ResultsDir = p.resultsDir
 
-	c.Conf.CveDBType = p.cvedbtype
-	c.Conf.CveDBPath = p.cvedbpath
-	c.Conf.CveDBURL = p.cveDictionaryURL
+	//TODO
+	// c.Conf.CveDBType = p.cvedbtype
+	// c.Conf.CveDBPath = p.cvedbpath
+	// c.Conf.CveDBURL = p.cveDictionaryURL
 
-	c.Conf.OvalDBType = p.ovalDBType
-	c.Conf.OvalDBPath = p.ovalDBPath
-	c.Conf.OvalDBURL = p.ovalDBURL
+	// c.Conf.OvalDBType = p.ovalDBType
+	// c.Conf.OvalDBPath = p.ovalDBPath
+	// c.Conf.OvalDBURL = p.ovalDBURL
 
-	c.Conf.GostDBType = p.gostDBType
-	c.Conf.GostDBPath = p.gostDBPath
-	c.Conf.GostDBURL = p.gostDBURL
+	// c.Conf.GostDBType = p.gostDBType
+	// c.Conf.GostDBPath = p.gostDBPath
+	// c.Conf.GostDBURL = p.gostDBURL
 
 	c.Conf.CvssScoreOver = p.cvssScoreOver
 	c.Conf.IgnoreUnscoredCves = p.ignoreUnscoredCves
@@ -267,16 +271,17 @@ func (p *TuiCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) s
 	}
 	util.Log.Infof("Loaded: %s", dir)
 
+	//TODO
 	dbclient, locked, err := report.NewDBClient(report.DBClientConf{
-		CveDBType:  c.Conf.CveDBType,
-		CveDBURL:   c.Conf.CveDBURL,
-		CveDBPath:  c.Conf.CveDBPath,
-		OvalDBType: c.Conf.OvalDBType,
-		OvalDBURL:  c.Conf.OvalDBURL,
-		OvalDBPath: c.Conf.OvalDBPath,
-		GostDBType: c.Conf.GostDBType,
-		GostDBURL:  c.Conf.GostDBURL,
-		GostDBPath: c.Conf.GostDBPath,
+		CveDBType:  c.Conf.Report.CveDict.Type,
+		CveDBURL:   c.Conf.Report.CveDict.URL,
+		CveDBPath:  c.Conf.Report.CveDict.Path,
+		OvalDBType: c.Conf.Report.OvalDict.Type,
+		OvalDBURL:  c.Conf.Report.OvalDict.URL,
+		OvalDBPath: c.Conf.Report.OvalDict.Path,
+		GostDBType: c.Conf.Report.Gost.Type,
+		GostDBURL:  c.Conf.Report.Gost.URL,
+		GostDBPath: c.Conf.Report.Gost.Path,
 		DebugSQL:   c.Conf.DebugSQL,
 	})
 	if locked {
